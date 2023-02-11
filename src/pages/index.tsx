@@ -15,7 +15,11 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="h-screen w-screen">
-        <Canvas shadows camera={{ position: [0, 0, 5], fov: 60 }}>
+        <Canvas
+          camera={{ position: [0, 0, 5], fov: 60 }}
+          dpr={[1, 2]}
+          frameloop="always"
+        >
           <ambientLight />
           <pointLight position={[10, 10, 10]} />
           <Scene />
@@ -72,7 +76,20 @@ function AquariumBox(props: ThreeElements["mesh"]) {
   return (
     <mesh {...props} ref={ref}>
       <boxGeometry args={[3, 3, 3]} />
-      <meshStandardMaterial />
+      <meshStandardMaterial color="blue" transparent opacity={0.5} />
+      <Boid />
     </mesh>
   );
 }
+const Boid = () => {
+  const ref = useRef<THREE.Mesh>(null);
+  useFrame((state, delta) => {
+    ref.current?.translateX(0.01);
+  });
+  return (
+    <mesh ref={ref}>
+      <coneGeometry />
+      <meshBasicMaterial color="royalblue" />
+    </mesh>
+  );
+};
