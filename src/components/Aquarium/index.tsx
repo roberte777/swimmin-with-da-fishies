@@ -1,14 +1,18 @@
 import React, { useRef } from "react";
 import type { ThreeElements } from "@react-three/fiber";
 import { Grid } from "@react-three/drei";
+import { School } from "../Boids";
 
-export const Aquarium = (props: ThreeElements["mesh"]) => {
-  const ref = useRef<THREE.Mesh>(null);
+export const Aquarium = (props: ThreeElements["group"]) => {
+  const ref = useRef<THREE.Group>(null);
   return (
-    <mesh {...props} ref={ref}>
-      <boxGeometry args={[25, 25, 25]} />
-      <meshStandardMaterial color="blue" transparent opacity={0.3} />
-    </mesh>
+    <group {...props} ref={ref}>
+      <mesh>
+        <boxGeometry args={[25, 25, 25]} />
+        <meshStandardMaterial color="blue" transparent opacity={0.3} />
+      </mesh>
+      <School />
+    </group>
   );
 };
 
