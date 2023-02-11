@@ -16,7 +16,7 @@ const Home: NextPage = () => {
       </Head>
       <div className="h-screen w-screen">
         <Canvas
-          camera={{ position: [0, 0, 5], fov: 60 }}
+          camera={{ position: [0, 0, 35], fov: 60 }}
           dpr={[1, 2]}
           frameloop="always"
         >
@@ -47,7 +47,7 @@ function Scene() {
             position={[0, 0, 0]}
           />
         </Center>
-        <CameraControls ref={cameraControlsRef} minDistance={10} enabled />
+        <CameraControls ref={cameraControlsRef} minDistance={30} enabled />
         <Ground />
       </group>
     </>
@@ -72,11 +72,10 @@ function Ground() {
 
 function AquariumBox(props: ThreeElements["mesh"]) {
   const ref = useRef<THREE.Mesh>(null);
-  // useFrame((state, delta) => (ref.current.rotation.x += delta));
   return (
     <mesh {...props} ref={ref}>
-      <boxGeometry args={[3, 3, 3]} />
-      <meshStandardMaterial color="blue" transparent opacity={0.5} />
+      <boxGeometry args={[25, 25, 25]} />
+      <meshStandardMaterial color="blue" transparent opacity={0.3} />
       <Boid />
     </mesh>
   );
@@ -88,7 +87,7 @@ const Boid = () => {
   });
   return (
     <mesh ref={ref}>
-      <coneGeometry />
+      <coneGeometry args={[0.5, 1]} />
       <meshBasicMaterial color="royalblue" />
     </mesh>
   );
