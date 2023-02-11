@@ -1,9 +1,10 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useSession } from "next-auth/react";
-import React, { useRef, useState } from "react";
+import React, { memo, useRef, useState } from "react";
 import type { ThreeElements } from "@react-three/fiber";
+import { useThree } from "@react-three/fiber";
 import { Canvas, useFrame } from "@react-three/fiber";
+import { Grid, Center, CameraControls } from "@react-three/drei";
 
 const Home: NextPage = () => {
   return (
@@ -17,11 +18,14 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="h-screen w-screen">
-        <Canvas>
+        <Canvas
+          camera={{ position: [0, 0, 35], fov: 60 }}
+          dpr={[1, 2]}
+          frameloop="always"
+        >
           <ambientLight />
           <pointLight position={[10, 10, 10]} />
-          <Box position={[-1.2, 0, 0]} />
-          <Box position={[1.2, 0, 0]} />
+          <Scene />
         </Canvas>
       </div>
     </>
@@ -30,22 +34,64 @@ const Home: NextPage = () => {
 
 export default Home;
 
-function Box(props: ThreeElements["mesh"]) {
-  const ref = useRef<THREE.Mesh>(null!);
-  const [hovered, hover] = useState(false);
-  const [clicked, click] = useState(false);
-  useFrame((state, delta) => (ref.current.rotation.x += delta));
+function Scene() {
+  const meshRef = useRef(null);
+  const cameraControlsRef = useRef(null);
+
+  const { camera } = useThree();
+
   return (
-    <mesh
-      {...props}
-      ref={ref}
-      scale={clicked ? 1.5 : 1}
-      onClick={(event) => click(!clicked)}
-      onPointerOver={(event) => hover(true)}
-      onPointerOut={(event) => hover(false)}
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? "hotpink" : "orange"} />
+    <>
+      <group position-y={-0.5}>
+        <Center top>
+          <AquariumBox
+            ref={meshRef}
+            rotation={[0, 0, 0]}
+            position={[0, 0, 0]}
+          />
+        </Center>
+        <CameraControls ref={cameraControlsRef} minDistance={30} enabled />
+        <Ground />
+      </group>
+    </>
+  );
+}
+
+function Ground() {
+  const gridConfig = {
+    cellSize: 0.5,
+    cellThickness: 0.5,
+    cellColor: "#6f6f6f",
+    sectionSize: 3,
+    sectionThickness: 1,
+    sectionColor: "#9d4b4b",
+    fadeDistance: 30,
+    fadeStrength: 1,
+    followCamera: false,
+    infiniteGrid: true,
+  };
+  return <Grid position={[0, -0.01, 0]} args={[10.5, 10.5]} {...gridConfig} />;
+}
+
+function AquariumBox(props: ThreeElements["mesh"]) {
+  const ref = useRef<THREE.Mesh>(null);
+  return (
+    <mesh {...props} ref={ref}>
+      <boxGeometry args={[25, 25, 25]} />
+      <meshStandardMaterial color="blue" transparent opacity={0.3} />
+      <Boid />
     </mesh>
   );
 }
+const Boid = () => {
+  const ref = useRef<THREE.Mesh>(null);
+  useFrame((state, delta) => {
+    ref.current?.translateX(0.01);
+  });
+  return (
+    <mesh ref={ref}>
+      <coneGeometry args={[0.5, 1]} />
+      <meshBasicMaterial color="royalblue" />
+    </mesh>
+  );
+};
