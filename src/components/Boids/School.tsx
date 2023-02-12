@@ -1,16 +1,21 @@
-import type { ThreeElements } from "@react-three/fiber";
-import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
-import { RapierRigidBody, RigidBody } from "@react-three/rapier";
+import * as THREE from "three";
+import { type ThreeElements, useFrame } from "@react-three/fiber";
+import { useEffect, useRef } from "react";
+import { Vector3 } from "three";
 
 export const School = () => {
   const ref = useRef<THREE.Group>(null);
   return (
     <group ref={ref}>
       {Array.from({ length: 10 }).map((_, i) => {
-        let randomX = Math.random() * 10;
-        let randomY = Math.random() * 10;
-        let randomZ = Math.random() * 10;
+        const randomX = Math.random() * 10;
+        const randomY = Math.random() * 10;
+        const randomZ = Math.random() * 10;
+        //generate random values between -1 and 1
+        // const randomXVelocity = Math.random() * 2 - 1;
+        // const randomYVelocity = Math.random() * 2 - 1;
+        // const randomZVelocity = Math.random() * 2 - 1;
+
         return <Boid key={i} position={[randomX, randomY, randomZ]} />;
       })}
     </group>
@@ -18,21 +23,27 @@ export const School = () => {
 };
 
 const Boid = (props: ThreeElements["mesh"]) => {
-  const ref = useRef<RapierRigidBody>(null);
-  useFrame((state, delta) => {
-    if (ref.current) {
-      let vel = ref.current.linvel();
-      ref.current.setRotation([0, 0.5, 5]);
-      //get the current velocity and rotate the boid towards it
-      ref.current?.setLinvel({ x: 1, y: 0, z: 0 });
+  const mesh = useRef<THREE.Mesh>(null);
+  const velocity = useRef<THREE.Vector3>(new THREE.Vector3(0.01, 0.01, 0));
+  useEffect(() => {
+    mesh.current?.geometry.rotateX(Math.PI / 2);
+  }, []);
+
+  useFrame(() => {
+    if (mesh.current) {
+      //make the boid rotate to face the current direction of travel
+      let target = new Vector3();
+      target = mesh.current.getWorldPosition(target);
+      let dir = velocity.current.clone();
+      dir.add(target);
+      mesh.current.lookAt(dir);
+      mesh.current.position.add(velocity.current);
     }
   });
   return (
-    <RigidBody ref={ref} {...props}>
-      <mesh>
-        <coneGeometry args={[0.5, 1]} />
-        <meshBasicMaterial color="royalblue" />
-      </mesh>{" "}
-    </RigidBody>
+    <mesh ref={mesh} {...props}>
+      <coneGeometry args={[0.5, 1.5]} />
+      <meshBasicMaterial color="royalblue" />
+    </mesh>
   );
 };
