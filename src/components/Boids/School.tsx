@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 
 export const School = () => {
-  const ref = useRef<THREE.Mesh>(null);
+  const ref = useRef<THREE.Group>(null);
   return (
     <group ref={ref}>
       {Array.from({ length: 10 }).map((_, i) => (

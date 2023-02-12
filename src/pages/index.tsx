@@ -1,12 +1,6 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import React, { memo, useRef, useState } from "react";
-import type { ThreeElements } from "@react-three/fiber";
-import { useThree } from "@react-three/fiber";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Grid, Center, CameraControls } from "@react-three/drei";
 import { AquaticEnvironment } from "../components";
-// import { AquaticScene } from "@/components";
 
 const Home: NextPage = () => {
   return (
