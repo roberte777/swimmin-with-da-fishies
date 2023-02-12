@@ -6,13 +6,16 @@ import { School } from "../Boids";
 export const Aquarium = (props: ThreeElements["group"]) => {
   const ref = useRef<THREE.Group>(null);
   return (
-    <group {...props} ref={ref}>
+    <>
       <mesh>
         <boxGeometry args={[25, 25, 25]} />
         <meshStandardMaterial color="blue" transparent opacity={0.3} />
       </mesh>
       <School />
-    </group>
+    </>
+    // <group {...props} ref={ref}>
+
+    // </group>
   );
 };
 
