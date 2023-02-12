@@ -14,6 +14,7 @@
     "@prisma/client": "^4.9.0",
     "@react-three/drei": "^9.56.24",
     "@react-three/fiber": "^8.9.1",
+    "@react-three/rapier": "^0.13.2",
     "@tanstack/react-query": "^4.20.0",
     "@trpc/client": "^10.9.0",
     "@trpc/next": "^10.9.0",
