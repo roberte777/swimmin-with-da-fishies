@@ -1,15 +1,2 @@
-import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
-
-export const Boid = () => {
-  const ref = useRef<THREE.Mesh>(null);
-  useFrame((state, delta) => {
-    ref.current?.translateX(0.01);
-  });
-  return (
-    <mesh ref={ref}>
-      <coneGeometry args={[0.5, 1]} />
-      <meshBasicMaterial color="royalblue" />
-    </mesh>
-  );
-};
+export { School } from "./School";
+// 'XYZ' | 'YXZ' | 'ZXY' | 'ZYX' | 'YZX' | 'XZY';
