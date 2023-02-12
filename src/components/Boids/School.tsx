@@ -1,6 +1,7 @@
 import type { ThreeElements } from "@react-three/fiber";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
+import { RigidBody } from "@react-three/rapier";
 
 export const School = () => {
   const ref = useRef<THREE.Group>(null);
@@ -19,9 +20,11 @@ const Boid = (props: ThreeElements["mesh"]) => {
     ref.current?.translateX(0.01);
   });
   return (
-    <mesh ref={ref} {...props}>
-      <coneGeometry args={[0.5, 1]} />
-      <meshBasicMaterial color="royalblue" />
-    </mesh>
+    <RigidBody>
+      <mesh ref={ref} {...props}>
+        <coneGeometry args={[0.5, 1]} />
+        <meshBasicMaterial color="royalblue" />
+      </mesh>{" "}
+    </RigidBody>
   );
 };

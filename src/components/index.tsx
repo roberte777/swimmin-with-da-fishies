@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React, { Suspense, useRef } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Center, CameraControls } from "@react-three/drei";
+import { Physics } from "@react-three/rapier";
 import { Aquarium, AquariumGrid } from "./Aquarium";
 
 export const AquaticEnvironment = () => {
@@ -13,7 +14,11 @@ export const AquaticEnvironment = () => {
       >
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
-        <AquaticScene />
+        <Suspense>
+          <Physics gravity={[0, 0, 0]} interpolate={false} colliders={false}>
+            <AquaticScene />
+          </Physics>
+        </Suspense>
       </Canvas>
     </div>
   );
