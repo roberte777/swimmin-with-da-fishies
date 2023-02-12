@@ -16,7 +16,7 @@ const PERCEPTION = 5;
 
 export const School = () => {
   const ref = useRef<THREE.Group>(null);
-  let boids: { velocity: Vector3; position: Vector3 }[] = [];
+  const boids: { velocity: Vector3; position: Vector3 }[] = [];
 
   return (
     <group ref={ref}>
