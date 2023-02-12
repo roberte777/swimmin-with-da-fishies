@@ -6,13 +6,13 @@ import { vec3 } from "@react-three/rapier";
 import { Vector3 } from "three";
 import { WORLD_SIZE } from "../Aquarium";
 
-const MAX_FORCE = 0.007;
-const MAX_SPEED = 0.1;
-const ALIGNMENT_CONSTANT = 0.3;
-const SEPARATION_CONSTANT = 0.2;
-const WANDER_CONSTANT = 0.1;
-const COHESION_CONSTANT = 0.07;
-const PERCEPTION = 100;
+const MAX_FORCE = 0.01;
+const MAX_SPEED = 0.3;
+const ALIGNMENT_CONSTANT = 1;
+const SEPARATION_CONSTANT = 1;
+const WANDER_CONSTANT = 0.2;
+const COHESION_CONSTANT = 1.1;
+const PERCEPTION = 5;
 
 export const School = () => {
   const ref = useRef<THREE.Group>(null);
@@ -77,6 +77,7 @@ const Boid = (
       Math.random() * WORLD_SIZE[2] - WORLD_SIZE[2] / 2
     )
   );
+  const ray = useRef<THREE.Raycaster>();
 
   // const {x, y, z, lookX, lookY, lookZ, velocity} = useControls({
   //   x: { value: 0, min: 0, max: 50, step: Math.PI / 6 },
@@ -100,6 +101,7 @@ const Boid = (
       dir.add(target);
       dir.add(velocity.current);
       coneRef.current?.lookAt(dir);
+      ray.current?.set(target, dir);
       const steering = new Vector3();
       steering.add(
         alignment(
@@ -133,10 +135,32 @@ const Boid = (
         ).multiplyScalar(WANDER_CONSTANT)
       );
       velocity.current.add(steering);
+      const collisionResults = ray.current?.intersectObjects(
+        props.group.current.children.map((o) => {
+          return o;
+        })
+      );
+      if (collisionResults.length > 0) {
+        console.log(collisionResults);
+        // flee from the object
+        // var seek = this.seek(delta, collisionResults[0].point);
+        // this.acceleration.add(seek.negate().multiplyScalar(100));
+        // gently dodge object
+        // for (var i = 0; i < utils.sphereCastDirections.length; i++) {
+        //   const direction = utils.sphereCastDirections[i]
+        //   raycaster = new THREE.Raycaster(originPoint, direction, 0, visionRange);
+        //   var spectrumCollision = raycaster.intersectObject(collisionResults[0].object)
+        //   if (spectrumCollision.length === 0) {
+        //     this.acceleration.add(direction.clone().multiplyScalar(100))
+        //     break
+        //   }
+        // }
+      }
+      const np = outOfBounds(coneRef.current.position, velocity.current);
       coneRef.current.position.add(velocity.current);
+      // velocity.current.add(np);
+      // coneRef.current.position.add(velocity.current);
       props.boids[props.index].velocity = velocity.current;
-      const np = outOfBounds(coneRef.current.position);
-      coneRef.current?.position.set(np.x, np.y, np.z);
       props.boids[props.index].position = coneRef.current.position;
 
       //update wander target
@@ -151,22 +175,34 @@ const Boid = (
   });
   return (
     <Cone ref={coneRef} args={[0.5, 1, 20]}>
-      <meshPhysicalMaterial color="orange" />
+      <meshPhysicalMaterial />
+      <raycaster
+        args={[coneRef.current?.position, undefined, 0, 10]}
+        ref={ray}
+      />
     </Cone>
   );
 };
 
-const outOfBounds = (position: THREE.Vector3) => {
-  if (position.x > WORLD_SIZE[0] / 2 || position.x < -WORLD_SIZE[0] / 2) {
-    return new Vector3(-position.x, position.y, position.z);
+const outOfBounds = (position: THREE.Vector3, velocity: THREE.Vector3) => {
+  if (
+    position.x + velocity.x > WORLD_SIZE[0] / 2 - 2 ||
+    position.x + velocity.x < -WORLD_SIZE[0] / 2 + 5
+  ) {
+    velocity = velocity.reflect(new Vector3(1, 0, 0));
   }
-  if (position.y > WORLD_SIZE[1] / 2 || position.y < -WORLD_SIZE[1] / 2) {
-    return new Vector3(position.x, -position.y, position.z);
+  if (
+    position.y + velocity.y > WORLD_SIZE[1] / 2 - 2 ||
+    position.y + velocity.y < -WORLD_SIZE[1] / 2 + 5
+  ) {
+    velocity = velocity.reflect(new Vector3(0, 1, 0));
   }
-  if (position.z > WORLD_SIZE[2] / 2 || position.z < -WORLD_SIZE[2] / 2) {
-    return new Vector3(position.x, position.y, -position.z);
+  if (
+    position.z + velocity.z > WORLD_SIZE[2] / 2 - 2 ||
+    position.z + velocity.z < -WORLD_SIZE[2] / 2 + 5
+  ) {
+    velocity = velocity.reflect(new Vector3(0, 0, 1));
   }
-  return position;
 };
 
 function alignment(
