@@ -24,6 +24,7 @@
     "next-auth": "^4.19.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "simplex-noise": "^4.0.1",
     "superjson": "1.9.1",
     "three": "^0.149.0",
     "zod": "^3.20.2"
