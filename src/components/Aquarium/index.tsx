@@ -2,13 +2,14 @@ import React, { useRef } from "react";
 import type { ThreeElements } from "@react-three/fiber";
 import { Grid } from "@react-three/drei";
 import { School } from "../Boids";
+export const WORLD_SIZE = [25, 25, 25] as [number, number, number];
 
 export const Aquarium = (props: ThreeElements["group"]) => {
   const ref = useRef<THREE.Group>(null);
   return (
     <>
       <mesh>
-        <boxGeometry args={[25, 25, 25]} />
+        <boxGeometry args={WORLD_SIZE} />
         <meshStandardMaterial color="blue" transparent opacity={0.3} />
       </mesh>
       <School />
