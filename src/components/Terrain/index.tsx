@@ -13,12 +13,15 @@ export const CustomMarchingCube = ({
 }) => {
   const ref = useRef<Group>(null);
   return (
-    <MarchingCube
-      ref={ref}
-      color={new Color("grey")}
-      subtract={index * 10}
-      position={position}
-      scale={0.01}
-    />
+    <mesh name={`mesh${index}`} layers={1}>
+      <MarchingCube
+        name={`marchingCube${index}`}
+        ref={ref}
+        color={new Color("grey")}
+        subtract={10}
+        position={position}
+        scale={0.01}
+      ></MarchingCube>
+    </mesh>
   );
 };

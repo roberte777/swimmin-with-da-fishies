@@ -14,7 +14,7 @@ import { Physics } from "@react-three/rapier";
 import { Aquarium, AquariumGrid } from "./Aquarium";
 // import { MarchingCubes } from "./Terrain";
 
-import { Color, Group } from "three";
+import { Color, DoubleSide, Group } from "three";
 import { CustomMarchingCube } from "./Terrain";
 
 export const AquaticEnvironment = () => {
@@ -60,14 +60,15 @@ const AquaticScene = () => {
     <>
       {/* <group> */}
       {/* <Center top> */}
-      <group position-y={-0.5}>
+      <group name={"march"}>
         <MarchingCubes
-          resolution={30}
+          resolution={50}
           maxPolyCount={40000}
           enableColors
           scale={20}
+          name={"marchingCubes"}
         >
-          {...Array.from({ length: 20 }).map((_, i) => {
+          {...Array.from({ length: 25 }).map((_, i) => {
             const pos: [x: number, y: number, z: number] = [
               Math.random() / 10 - 0.05,
               Math.random() / 30 - 0.0125,
@@ -80,13 +81,9 @@ const AquaticScene = () => {
             });
           })}
           {/* floor of reef */}
-          <MarchingPlane planeType="y" />
+          <MarchingPlane planeType="y" position={[0, 100, 0]} />
           {/* material to render stuff */}
-          <meshPhongMaterial
-            specular={0xffffff}
-            shininess={2}
-            vertexColors={true}
-          />
+          <meshStandardMaterial vertexColors={true} side={DoubleSide} />
         </MarchingCubes>
       </group>
       <Aquarium ref={aquariumRef} position={[0, 0, 0]} />

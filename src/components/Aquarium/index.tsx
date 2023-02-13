@@ -8,7 +8,7 @@ export const Aquarium = (props: ThreeElements["group"]) => {
   const ref = useRef<THREE.Group>(null);
   return (
     <>
-      <mesh>
+      <mesh name="The fucking cube">
         <boxGeometry args={WORLD_SIZE} />
         <meshStandardMaterial color="blue" transparent opacity={0.3} />
       </mesh>

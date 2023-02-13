@@ -1,10 +1,11 @@
 import type * as THREE from "three";
-import { type ThreeElements, useFrame } from "@react-three/fiber";
+import { type ThreeElements, useFrame, useThree } from "@react-three/fiber";
 import { Cone } from "@react-three/drei";
 import { useEffect, useRef } from "react";
 import { vec3 } from "@react-three/rapier";
 import { Vector3 } from "three";
 import { WORLD_SIZE } from "../Aquarium";
+import { warn } from "console";
 
 const MAX_FORCE = 0.01;
 const MAX_SPEED = 0.3;
@@ -40,6 +41,7 @@ export const School = () => {
 
         return (
           <Boid
+            name={`boid${i}`}
             key={i}
             boids={boids}
             position={[randomX, randomY, randomZ]}
@@ -78,6 +80,8 @@ const Boid = (
     )
   );
   const ray = useRef<THREE.Raycaster>();
+  const three = useThree();
+  // console.log(three);
 
   // const {x, y, z, lookX, lookY, lookZ, velocity} = useControls({
   //   x: { value: 0, min: 0, max: 50, step: Math.PI / 6 },
@@ -101,7 +105,7 @@ const Boid = (
       dir.add(target);
       dir.add(velocity.current);
       coneRef.current?.lookAt(dir);
-      ray.current?.set(target, dir);
+      ray.current?.set(coneRef.current.position, dir);
       const steering = new Vector3();
       steering.add(
         alignment(
@@ -135,10 +139,13 @@ const Boid = (
         ).multiplyScalar(WANDER_CONSTANT)
       );
       velocity.current.add(steering);
+      console.log(three.scene.children[2].children[0].children);
+      // const collisionResults = ray.current?.intersectObjects(
+      //   three.scene.children[2].children
+      // );
       const collisionResults = ray.current?.intersectObjects(
-        props.group.current.children.map((o) => {
-          return o;
-        })
+        three.scene.children[2].children[0].children.map((o) => o),
+        true
       );
       if (collisionResults.length > 0) {
         console.log(collisionResults);
@@ -177,7 +184,7 @@ const Boid = (
     <Cone ref={coneRef} args={[0.5, 1, 20]}>
       <meshPhysicalMaterial />
       <raycaster
-        args={[coneRef.current?.position, undefined, 0, 10]}
+        args={[coneRef.current?.position, undefined, 0, 150]}
         ref={ray}
       />
     </Cone>
